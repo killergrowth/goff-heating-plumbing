@@ -1045,7 +1045,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <span>&copy; 2025 Goff Heating &amp; Plumbing. All rights reserved.</span>
+        <span>&copy; <span id="copy-year"></span> Goff Heating &amp; Plumbing. All rights reserved.</span>
         <span>Licensed &amp; Insured | South Bend &amp; Surrounding Areas, Indiana</span>
       </div>
     </div>
@@ -1098,6 +1098,7 @@
     });
   });
 })();
+document.getElementById('copy-year').textContent = new Date().getFullYear();
 </script>
 </body>
 </html>
