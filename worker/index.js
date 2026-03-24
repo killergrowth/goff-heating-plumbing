@@ -11,6 +11,7 @@
 
 const GOFF_RED = '#C0504D';
 const GOFF_DARK = '#2a1a1a';
+const GHL_WEBHOOK = 'https://services.leadconnectorhq.com/hooks/9LCB8nE71m5ALhxql8kO/webhook-trigger/051258e4-a77b-4d21-823a-a6b8a699932c';
 
 // ── Gmail JWT Auth ──────────────────────────────────────────────────────────
 
@@ -124,8 +125,7 @@ function buildEmailHtml(data) {
           <!-- Header -->
           <tr>
             <td style="background:${GOFF_RED};padding:28px 32px;text-align:center;">
-              <span style="font-family:Arial,sans-serif;font-size:40px;font-weight:900;color:#ffffff;letter-spacing:3px;">GOFF</span>
-              <p style="color:rgba(255,255,255,0.85);font-size:13px;margin:8px 0 0;letter-spacing:1px;text-transform:uppercase;">Heating &amp; Air Conditioning</p>
+              <img src="https://goff-heating-plumbing.pages.dev/images/goff-logo-white.png" alt="Goff Heating &amp; Air Conditioning" style="height:70px;width:auto;display:block;margin:0 auto;">
             </td>
           </tr>
 
@@ -239,7 +239,7 @@ export default {
     const from = `Goff Plumbing Leads <${env.FROM_EMAIL}>`;
     const to = env.TO_EMAIL || 'brickley@killergrowth.com';
     const fullName = `${data.firstName || ''} ${data.lastName || ''}`.trim() || 'Unknown';
-    const subject = `New Plumbing Lead: ${fullName}${data.phone ? ' \u2014 ' + data.phone : ''}`;
+    const subject = `New Plumbing Lead: ${fullName}${data.phone ? ' - ' + data.phone : ''}`;
 
     try {
       const accessToken = await getGmailAccessToken(
@@ -256,6 +256,25 @@ export default {
         buildEmailHtml(data),
         data.email
       );
+
+      // Also POST to GHL webhook
+      try {
+        await fetch(GHL_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            first_name: data.firstName || '',
+            last_name: data.lastName || '',
+            email: data.email || '',
+            phone: data.phone || '',
+            zip: data.zip || '',
+            message: data.message || '',
+            source: 'Goff Plumbing Landing Page',
+          }),
+        });
+      } catch (webhookErr) {
+        console.error('GHL webhook error (non-fatal):', webhookErr.message);
+      }
 
       return json({ success: true });
     } catch (e) {
