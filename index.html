@@ -24,11 +24,11 @@
 
     /* ===== VARIABLES ===== */
     :root {
-      --primary: #204ce5;
-      --primary-dark: #001ab3;
-      --primary-light: #527eff;
-      --dark-bg: #1a2a4a;
-      --dark-bg2: #112337;
+      --primary: #C0504D;
+      --primary-dark: #a03d3a;
+      --primary-light: #d4706d;
+      --dark-bg: #2a1414;
+      --dark-bg2: #1e0f0f;
       --light-bg: #f4f7ff;
       --text-dark: #112337;
       --text-mid: #555;
@@ -706,7 +706,7 @@
         <div class="form-card">
           <h3>Request Service Today</h3>
           <p>We'll contact you quickly &mdash; usually within the hour.</p>
-          <form action="#" method="post">
+          <form id="contact-form" action="#" method="post">
             <div class="form-row">
               <div class="form-group">
                 <label for="fname">First Name *</label>
@@ -980,5 +980,47 @@
     Call (574) 289-6511 &mdash; Available 24/7
   </a>
 
+
+<script>
+(function() {
+  var form = document.getElementById('contact-form');
+  if (!form) return;
+  var submitBtn = form.querySelector('[type="submit"]');
+  var WORKER_URL = 'https://goff-plumbing-form.brickley.workers.dev';
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending...'; }
+
+    var data = {
+      firstName: form.querySelector('[name="firstName"]') ? form.querySelector('[name="firstName"]').value : '',
+      lastName: form.querySelector('[name="lastName"]') ? form.querySelector('[name="lastName"]').value : '',
+      email: form.querySelector('[name="email"]') ? form.querySelector('[name="email"]').value : '',
+      phone: form.querySelector('[name="phone"]') ? form.querySelector('[name="phone"]').value : '',
+      zip: form.querySelector('[name="zip"]') ? form.querySelector('[name="zip"]').value : '',
+      message: form.querySelector('[name="message"]') ? form.querySelector('[name="message"]').value : '',
+    };
+
+    fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+      if (res.success) {
+        form.innerHTML = '<div style="text-align:center;padding:40px 20px;"><div style="font-size:48px;margin-bottom:16px;">&#10003;</div><h3 style="color:#C0504D;margin:0 0 8px;">Request Received!</h3><p style="color:#555;margin:0;">We will contact you shortly. For emergencies, call us directly.</p></div>';
+      } else {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit Request'; }
+        alert('Something went wrong. Please call us directly or try again.');
+      }
+    })
+    .catch(function() {
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit Request'; }
+      alert('Could not send your request. Please call us directly.');
+    });
+  });
+})();
+</script>
 </body>
 </html>

@@ -1,0 +1,8 @@
+name = "goff-plumbing-form"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+# Set these in the Cloudflare dashboard under Workers > goff-plumbing-form > Settings > Variables:
+# RESEND_API_KEY = "re_xxxxxxxxxxxx"
+# TO_EMAIL = "brickley@killergrowth.com"
+# FROM_EMAIL = "Goff Plumbing Leads <leads@killergrowth.com>"
